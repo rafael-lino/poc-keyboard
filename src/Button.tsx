@@ -1,5 +1,6 @@
 import { MouseEvent, FC } from 'react';
 import { classNames } from './classNames';
+import { Resizable } from 're-resizable';
 type Props = {
   id?: string;
   selected?: boolean;
@@ -19,18 +20,24 @@ export const Button: FC<Props> = ({
   const flexShrink = calcFlexShrink(size);
 
   return (
-    <button
-      id={id}
+    <Resizable
+      defaultSize={{ width: 29.3, height: 40 }}
       className={classNames(selected && 'selected')}
-      style={{
-        marginLeft: margin && `${margin.left}px`,
-        marginRight: margin && `${margin.right}px`,
-        flexShrink,
+      enable={{
+        top: false,
+        right: true,
+        bottom: false,
+        left: false,
+        topRight: false,
+        bottomRight: false,
+        bottomLeft: false,
+        topLeft: false,
       }}
-      onClick={(e) => onClick?.(id as string, e)}
     >
-      {name}
-    </button>
+      <button id={id} onClick={(e) => onClick?.(id as string, e)}>
+        {name}
+      </button>
+    </Resizable>
   );
 };
 
