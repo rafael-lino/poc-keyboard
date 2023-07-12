@@ -2,7 +2,7 @@ import { MouseEvent, cloneElement, useEffect, useRef, useState } from 'react';
 import { Button } from './Button';
 import './App.scss';
 import { classNames } from './classNames';
-
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 type KeyboardButton = {
   id: string;
   element: JSX.Element;
@@ -249,28 +249,55 @@ function App() {
         </div>
 
         <div className='card' onClick={handleClickOutside}>
-          <div className='keyboard'>
-            {layout.map(
-              (item: {
-                id: string;
-                elements: Array<{ id: string; element: JSX.Element }>;
-              }) => {
-                return (
-                  <div key={item.id} className={classNames('keyboard__row')}>
-                    {item.elements.map(({ id, element, ...props }) => {
-                      return cloneElement(element, {
-                        key: id,
-                        id,
-                        selected: selectedId === id,
-                        onClick: handleSelect,
-                        ...props,
-                      });
-                    })}
-                  </div>
-                );
-              }
-            )}
-          </div>
+          <DragDropContext onDragEnd={console.log}>
+            <div className='keyboard'>
+              {layout.map(
+                (item: {
+                  id: string;
+                  elements: Array<{ id: string; element: JSX.Element }>;
+                }) => {
+                  return (
+                    <Droppable key={item.id} droppableId={item.id}>
+                      {(provide) => (
+                        <div
+                          key={item.id}
+                          className={classNames('keyboard__row')}
+                          {...provide.droppableProps}
+                          ref={provide.innerRef}
+                        >
+                          {provide.placeholder}
+                          {item.elements.map(
+                            ({ id, element, ...props }, index) => {
+                              return (
+                                <Draggable
+                                  key={id}
+                                  disableInteractiveElementBlocking={true}
+                                  draggableId={id}
+                                  index={index}
+                                >
+                                  {(provided) =>
+                                    cloneElement(element, {
+                                      id,
+                                      selected: selectedId === id,
+                                      onClick: handleSelect,
+                                      ...props,
+                                      ...provided.draggableProps,
+                                      ...provided.dragHandleProps,
+                                      innerRef: provided.innerRef,
+                                    })
+                                  }
+                                </Draggable>
+                              );
+                            }
+                          )}
+                        </div>
+                      )}
+                    </Droppable>
+                  );
+                }
+              )}
+            </div>
+          </DragDropContext>
         </div>
       </div>
     </>

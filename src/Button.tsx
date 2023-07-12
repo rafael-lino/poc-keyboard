@@ -1,11 +1,13 @@
 import { MouseEvent, FC } from 'react';
 import { classNames } from './classNames';
+
 type Props = {
   id?: string;
   selected?: boolean;
   name?: string;
   margin?: { left: number; right: number };
   size?: number;
+  innerRef?: any;
   onClick?: (id: string, event: MouseEvent<HTMLButtonElement>) => void;
 };
 export const Button: FC<Props> = ({
@@ -14,7 +16,9 @@ export const Button: FC<Props> = ({
   selected,
   margin,
   size,
+  innerRef,
   onClick,
+  ...props
 }) => {
   const flexShrink = calcFlexShrink(size);
 
@@ -28,6 +32,8 @@ export const Button: FC<Props> = ({
         flexShrink,
       }}
       onClick={(e) => onClick?.(id as string, e)}
+      {...props}
+      ref={innerRef}
     >
       {name}
     </button>
